@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 
+  <title>LotteMall | WishList</title>
+  <meta name ="author" Content="Web Application Project Team">
+  <meta name ="keywords" Content="Lotte, mall, shopping, 롯데, 쇼핑">
+  <meta name ="description" Content="GPS기반 쇼핑전용 애플리케이션입니다.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<!-- CSS -->
+  
+  <link rel="stylesheet" href="../style/css/bootstrap.min.css" type="text/css">
+
+  <!-- Plugin CSS -->
+  <link rel="stylesheet" href="../style/css/animate.min.css" type="text/css">
+  <link rel="stylesheet" href="../style/css/m.v2.min.css" type="text/css">
+  
+  <!-- JS  -->
+  <script src="../prototype.js" type="text/javascript"></script>
+  <script src="myCartisNotEmpty.js" type="text/javascript"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js" type="text/javascript"></script>
+
+  <!-- backward Operator -->
+  <!-- jQuery -->
+  <script src="../style/js/jquery.js"></script>
+  <!-- Bootstrap Core js -->
+  <script src="../style/js/bootstrap.min.js"></script>
+
+  <!-- Plugin js -->
+  <script src="../style/js/jquery.easing.min.js"></script>
+  <script src="../style/js/jquery.fittext.js"></script>
+  <script src="../style/js/wow.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<?php
+	session_start();
+	$idx = $_GET["idx"];
+	//$flag = $_GET["flag"];	
+	$usr_id = $_SESSION['usr_id'];
+	$account_idx = $_SESSION['account_idx'];
+	$is_logged = $_SESSION['is_logged'];
+	$rate = $_SESSION['rate'];
+    echo "<script>idx='$idx';account_idx = '$account_idx';is_logged='$is_logged'; rate='$rate';</script>";
+ ?>
+</head>
+<body>
+  <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <!-- Brand -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">Lotte Mall</a>
+        </div>
+
+        <div class="navbar-collapse collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-left">
+            <li>
+              <a href="isLogin.php">마이정보</a>
+            </li>
+            <li>
+              <a href="#">프로모션/쿠폰</a>
+            </li>
+            <li>
+              <a href="#">오프라인매장</a>
+            </li>
+          </ul>
+        
+         <ul class="nav navbar-nav navbar-right">
+            <li ><a id="showId" href="isLogin.php">          
+            <?php 
+			session_start();
+			
+			$is_logged = $_SESSION['is_logged'];
+			$usr_id = $_SESSION['usr_id'];
+	
+			if ($is_logged == 'YES')
+			{
+				echo $usr_id." 님 환영합니다."; 
+			}
+ 			?></a></li>
+ 			<li><a id="logout" href="../php_db/logout.php">          
+            <?php 			
+			if ($is_logged == 'YES')
+			{
+				echo "로그아웃"; 
+			}
+			mysql_close($connect);
+ 			?></a></li>
+ 			<li><a id="login" href="login.html">          
+            <?php
+			if ($is_logged != 'YES')
+			{
+				echo "로그인"; 
+			}
+ 			?></a></li>
+          </ul>
+          </div>
+      </div><!-- end of container -->
+    </div><!-- end of navbar -->
+
+    <!--  blank -->
+    <div id="blank" style="height:80px; width:100%"></div>
+
+    <script src="style/js/topMenuScript.js" type="text/javascript"></script>
+    <script src="style/js/floatingTitle.js" type="text/javascript"></script>
+  
+    <div class="container">
+      <div class="row">
+      <div class="col-sm-12 col-md-10 col-md-offset-1 text-left">
+      <div id="cart-title">
+      <span id="cartIcon"><img src="../icon/shopping-cart.png">
+      <h2 style="display:inline;" id="cartTitle">&nbsp장바구니</h2>
+      <p id="cart-countNumber" style="display:inline"></p></span>
+        </div>
+       </div>
+    </div>
+	</div>
+
+    <div id="blank" style="height:15px; width:100%"></div>
+
+   <div class="container" id="container">
+    <div class="row">
+        <div class="col-sm-12 col-md-10 col-md-offset-1" id="subContainer">
+            <table class="table table-hover table-condensed" id="table">
+                  <thead id="thead">
+                    <tr>
+<th id="theadChkbox"><input id="select-all" class="pull-left" type="checkbox" id="allCheck"checked="checked" onClick="CheckAll()"><span>&nbsp;전체선택</span></th>
+                        <th id="theadInfo">상품정보</th>
+                        <th id="theadDiscount"class="text-cendter">온라인 할인가</th>
+                        <th id="theadQty">수량</th>
+                        <th id = "theadSubtotal"class="text-center">소계</th>
+                        <th id="theadOnline">오프라인 매장 표시</th>
+                        <th id="theadDeleteBtn">  </th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                </tbody>
+              </table>
+         <div id="footer">
+         </div>
+    </div>
+  </div>
+  </div>
+
+  <script>
+  var idx;
+  var flag;
+  var is_logged;
+  var rate;
+  var tableTotalRows;
+  var tableRow = [];
+  var account_idx;
+  var tzs = [];
+  $(document).ready(init);
+  
+  function init() {
+	    var xhr = new XMLHttpRequest();
+	    xhr.open('POST', '../php_db/wishList.php');
+	    xhr.onreadystatechange = function(){
+	        if(xhr.readyState === 4 && xhr.status === 200){
+	            var _tzs = xhr.responseText;
+	            tzs = JSON.parse(_tzs);
+	            
+	            var _str='';
+	            tableTotalRows = tzs.length;
+	            tableRow;      
+	            if(is_logged== 'YES'){
+	             	if(tableTotalRows > 0){
+	             		insertCartCount();
+	             		cartisNotEmtpy(tzs,tableTotalRows,tableRow);
+	        		   }else {
+	        			//장바구니 내 상품이 없을 때		 
+	        			insertCartCount();
+	        			var cartNumber = document.getElementById('cart-count');
+	        			cartNumber.innerHTML = 0;
+	        			showCartIsEmpty();
+	                }
+	             }
+	             else{ 
+	             //사용자가 로그인을 하지 않았을 때
+	             var cartNumber = document.getElementById('cart-countNumber');
+	             cartNumber.setAttribute('style','display:none');
+	            	 userisNotLogin(tzs,tableTotalRows,tableRow);
+	             }
+	            reloadDisplay();
+            } 
+	    }
+    var data = new Object();
+    data.product_idx = idx;
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(JSON.stringify(data)); 
+	
+    window.onresize = function() { 
+        reloadDisplay(); 
+    };
+	    
+}
+  
+  function insertCartCount(){
+		 var cartCountH4 = document.createElement("h4");
+		 	cartCountH4.setAttribute('style','display:inline');
+		 	cartCountH4.innerHTML=" (";
+		 	var cartCountEm = document.createElement("em");
+		 	cartCountEm.setAttribute('class','cart-count');
+		 	cartCountEm.setAttribute('id','cart-count');
+		 	var cartCountH4_2 = document.createElement("h4");
+		 	cartCountH4_2.setAttribute('style','display:inline');
+		 	cartCountH4_2.innerHTML=" 개)";
+		 	document.getElementById('cart-countNumber').appendChild(cartCountH4);
+		 	document.getElementById('cart-countNumber').appendChild(cartCountEm);
+		 	document.getElementById('cart-countNumber').appendChild(cartCountH4_2);
+}
+
+function cartisNotEmtpy(tzs,tableTotalRows,tableRow){
+		 	 for(var i = 0; i< tableTotalRows; i++){
+		 	tableRow[i] = document.createElement("tr");
+		 	tableRow[i].setAttribute('id','productContent');
+		 	var checkboxTd = document.createElement("td");
+		 	checkboxTd.setAttribute('class','col-sm-1 col-md-1');
+		 	var checkbox = document.createElement("input");
+		 	checkbox.setAttribute('type','checkbox');
+		 	checkbox.setAttribute('id','checkbox'+i+'');
+		 	checkbox.setAttribute('name','CID');
+		 	checkbox.setAttribute('class','pull-left');
+		 	checkbox.setAttribute('checked','checked');
+		 	checkbox.setAttribute('onClick','selectChkbox('+tableTotalRows+')');           	
+		 	checkboxTd.appendChild(checkbox);
+		 	
+		 	var discountPrice = tzs[i].product_price*(100-tzs[i].rate)/100;
+		 	var productInfoTd = document.createElement("td");
+		 	productInfoTd.setAttribute('class','col-sm-8 col-md-6');
+		 	
+		 	var mediaDiv = document.createElement("div");
+		 	mediaDiv.setAttribute('class','media');
+		 	
+		 	var imgA = document.createElement("a");
+		 	imgA.setAttribute('class','thumbnail pull-left');
+		 	imgA.setAttribute('href','product/detail_product.html?idx='+tzs[i].product_idx+"&name="+tzs[i].product_name+"&price="+tzs[i].product_price+"&img_name="+tzs[i].img_name+"&rate="+tzs[i].rate);
+		 	var img = document.createElement("img");
+		 	img.setAttribute('class','media-object');
+		 	img.setAttribute('src','../img/'+tzs[i].img_name);
+		 	img.setAttribute('style','width: 72px; height:72px;')
+		 	imgA.appendChild(img);
+		 	
+		 	var media_bodyDiv = document.createElement("div");
+		 	media_bodyDiv.setAttribute('class','media-body');
+		 	var media_heading = document.createElement("media-heading");
+		 	media_heading.setAttribute('class','media-heading');
+		 	var productName = document.createElement("a");
+		 	productName.setAttribute('href','#');
+		 	productName.innerHTML = tzs[i].product_name;         	
+		 	media_heading.appendChild(productName);
+		 	media_bodyDiv.appendChild(media_heading);
+		 	
+		 	mediaDiv.appendChild(imgA);
+		 	mediaDiv.appendChild(media_bodyDiv);
+		 	productInfoTd.appendChild(mediaDiv);
+		 			 	
+		 	var productQtyTd = document.createElement("td");
+		 	productQtyTd.setAttribute('class','col-sm-1 col-md-1');
+		 	var qtyP = document.createElement("p");
+		 	qtyP.setAttribute('id','qtyField');
+		 	var qtyInput = document.createElement("input");
+		 	qtyInput.setAttribute('type','text');
+		 	qtyInput.setAttribute('class','form-control input-sm text-center');
+		 	qtyInput.setAttribute('id','product_qty'+(i+1));   
+		 	
+		 	//have to change this field
+		 	qtyInput.setAttribute('value','1');
+		 	qtyInput.setAttribute('maxlength','3');
+		 	qtyInput.setAttribute('title','구매수량');
+		 	var plusButton = document.createElement("button");
+		 	plusButton.setAttribute('type','button');
+		 	plusButton.setAttribute('class','tn btn-default btn-xs glyphicon glyphicon-plus');
+		 	plusButton.setAttribute('id','btn-up');
+		 	plusButton.setAttribute('onClick','qty_plus('+(i+1)+','+tableTotalRows+','+discountPrice+')');
+		 	var minusButton = document.createElement("button");
+		 	minusButton.setAttribute('type','button');
+		 	minusButton.setAttribute('class','btn btn-default btn-xs glyphicon glyphicon-minus');
+		 	minusButton.setAttribute('id','btn-down');
+		 	minusButton.setAttribute('onClick','qty_minus('+(i+1)+','+tableTotalRows+','+discountPrice+')');
+		 	
+		 	qtyP.appendChild(qtyInput);
+		 	qtyP.appendChild(plusButton);
+		 	qtyP.appendChild(minusButton);
+		 	productQtyTd.appendChild(qtyP);
+		 	            	
+		 	var subTotalTd = document.createElement("td");
+		 	subTotalTd.setAttribute('class','col-sm-1 col-md-1 text-center');
+		 	subTotalTd.setAttribute('id','subtotal'+(i+1));
+		 	
+		 	var onlineDiscountTd = document.createElement("td");
+		 	onlineDiscountTd.setAttribute('class','col-sm-1 col-md-1 text-center');
+		 	var h5 = document.createElement("h5");
+		 	h5.setAttribute('class','pull-left');
+		 	h5.setAttribute('id','originalPrice'+(i+1));
+	        h5.setAttribute('style','position:relative; float:left; text-decoration: line-through;');
+	        h5.innerHTML = tzs[i].product_price + ' 원'; //상품가격
+	                    
+	        var discountH3 = document.createElement("h5");
+	        discountH3.setAttribute('class','pull-right');
+	        discountH3.setAttribute('style','position:relative; float:right; color:#518ddd;');
+	        discountH3.setAttribute('id','onlineDiscount'+(i+1));
+	        discountH3.innerHTML = tzs[i].product_price*(100-tzs[i].rate)/100 + ' 원'; //상품가격
+	        
+	        onlineDiscountTd.appendChild(h5);
+	        onlineDiscountTd.appendChild(discountH3);
+		 	
+		 	var offLineTd = document.createElement("td");
+		 	offLineTd.setAttribute('class','col-sm-1 col-md-1');
+		 	var offLineName = document.createElement("a");   
+		 	
+		 	if(tzs[i].offline_qty > 0){
+		 		offLineName.setAttribute('href','javascript:popup('+tzs[i].product_idx+')');
+				offLineName.innerHTML='매장 보기';
+				var searchIcon = document.createElement("span");
+		 		searchIcon.setAttribute('class','glyphicon glyphicons-search');
+		 		offLineTd.appendChild(offLineName);
+		 		offLineTd.appendChild(searchIcon);
+		 	} else{
+		 		offLineName.setAttribute('href','#');            	
+		 		offLineName.innerHTML='재고 없음';
+		 		offLineTd.appendChild(offLineName);
+		 	}
+		 			 	
+		 	var deleteRowTd = document.createElement("td");
+		 	deleteRowTd.setAttribute('class','col-sm-1 col-md-1');
+		 	var deleteBtn = document.createElement("button");
+		 	deleteBtn.setAttribute('type','button');
+		 	deleteBtn.setAttribute('class','btn btn-danger btn-xs');;
+		 	deleteBtn.setAttribute('onClick','delete_row('+tableTotalRows+','+tzs[i].product_idx+','+account_idx+')');
+		 	deleteBtn.setAttribute('id','deleteBtn');
+		 	var deleteIcon = document.createElement("span");
+		 	deleteIcon.setAttribute('class','glyphicon glyphicon-remove');
+		 	deleteBtn.appendChild(deleteIcon);
+		 	deleteRowTd.appendChild(deleteBtn);
+		 	
+		 	tableRow[i].appendChild(checkboxTd);
+		 	tableRow[i].appendChild(productInfoTd);
+		 	tableRow[i].appendChild(onlineDiscountTd);
+		 	tableRow[i].appendChild(productQtyTd);
+		 	tableRow[i].appendChild(subTotalTd);
+		 	tableRow[i].appendChild(offLineTd);
+		 	tableRow[i].appendChild(deleteRowTd);
+		 	document.getElementById('tbody').appendChild(tableRow[i]);
+		 	} 
+		 	drawFooter(tzs,tableTotalRows,tableRow);
+		}
+		
+		function drawFooter(tzs,tableTotalRows,tableRow){
+			var selectAllChkbox = document.createElement("input");
+			 selectAllChkbox.setAttribute('class','pull-left');
+			 selectAllChkbox.setAttribute('type','checkbox');
+			 selectAllChkbox.setAttribute('id','select-all2');
+			 selectAllChkbox.setAttribute('checked','checked');
+			 selectAllChkbox.setAttribute('onclick','CheckAllBottom()');
+			 
+			 var span = document.createElement("span");
+			 span.innerHTML="전체선택";
+			 
+			 var pUnit = document.createElement("p");
+			 pUnit.setAttribute('style','display:inline');
+			 pUnit.innerHTML=" ( ";
+			 
+			 var h4 = document.createElement("h4");
+			 h4.setAttribute('style','display:inline');
+			 var em = document.createElement("em");
+			 em.setAttribute('class','check-count');
+			 em.setAttribute('id','check-count');
+			 
+			 var pbar = document.createElement("p");
+			 pbar.setAttribute('style','display:inline');
+			 pbar.innerHTML=" / ";
+			 
+			 var em2 = document.createElement("em");
+			 em2.setAttribute('id','cart-count2');
+			 
+			 var pUnit2 = document.createElement("p");
+			 pUnit2.setAttribute('style','display:inline');
+			 pUnit2.innerHTML=" ) ";
+			 
+			 var deleteAllbtn=document.createElement("button");
+			 deleteAllbtn.setAttribute('class','btn btn-default btn-xs');
+			 deleteAllbtn.setAttribute('style','display:inline;');
+			 deleteAllbtn.setAttribute('onClick','delete_table('+account_idx+')');
+			 deleteAllbtn.innerHTML="전체삭제";
+			 
+			 var br = document.createElement("br");
+			 
+			 var totalPriceDiv=document.createElement("div");
+			 totalPriceDiv.setAttribute('class','panel panel-default');
+			 
+			 var totalPriceBodyDiv =document.createElement("div");
+			 totalPriceBodyDiv.setAttribute('class','panel-body text-center');
+			 var totalPrice = document.createElement("h3");
+			 totalPrice.setAttribute('class','text-right');
+			 totalPrice.setAttribute('style','display:inline;');
+			 totalPrice.innerHTML="총 상품 금액 : "
+			 var totalPriceh3 = document.createElement("h3");
+			 totalPriceh3.setAttribute('id','totalPrice');
+			 totalPriceh3.setAttribute('style','display:inline;');
+			 var won = document.createElement("h3");
+			 won.setAttribute('style','display:inline;');
+			 won.innerHTML=" 원";
+			 
+			 totalPriceBodyDiv.appendChild(totalPrice);
+			 totalPriceBodyDiv.appendChild(totalPriceh3);
+			 totalPriceBodyDiv.appendChild(won);
+			 totalPriceDiv.appendChild(totalPriceBodyDiv);
+			 var br2 = document.createElement("br");
+			 
+			 var buttonDiv = document.createElement("div");
+			 buttonDiv.setAttribute('class','pull-right');
+			 buttonDiv.setAttribute('id','footer-button');
+			 var cartButton = document.createElement("button");
+			 cartButton.setAttribute('type','button');
+			 cartButton.setAttribute('class','btn btn-default');
+			 cartButton.setAttribute('id','cartButton');
+			 cartButton.setAttribute("onclick","location.href='https://www.lotteshop.tk/index.html");
+			 cartButton.innerHTML="계속 쇼핑하기";
+			 var continueShopping = document.createElement("span");
+			 continueShopping.setAttribute('class','glyphicon glyphicon-shopping-cart');
+			     
+			 var orderButton = document.createElement("button");
+			 orderButton.innerHTML="주문하기";  
+			 orderButton.setAttribute('type','button');
+			 orderButton.setAttribute('class','btn btn-success');
+			 var order = document.createElement("span");
+			 order.setAttribute('class','glyphicon glyphicon-play');
+			  
+			 cartButton.appendChild(continueShopping);
+			 orderButton.appendChild(order);
+			 buttonDiv.appendChild(cartButton);
+			 buttonDiv.appendChild(orderButton);
+			 
+			 document.getElementById('footer').appendChild(selectAllChkbox);
+			 document.getElementById('footer').appendChild(span);
+			 document.getElementById('footer').appendChild(pUnit);
+			 document.getElementById('footer').appendChild(h4);
+			 document.getElementById('footer').appendChild(em);
+			 document.getElementById('footer').appendChild(pbar);
+			 document.getElementById('footer').appendChild(em2);
+			 document.getElementById('footer').appendChild(pUnit2);
+			 document.getElementById('footer').appendChild(deleteAllbtn);
+			 document.getElementById('footer').appendChild(br);
+			 document.getElementById('footer').appendChild(totalPriceDiv);
+			 document.getElementById('footer').appendChild(br2);
+			 document.getElementById('footer').appendChild(buttonDiv);
+			 
+			 calcSubtotal(tableTotalRows);
+			 calcTotal(tableTotalRows);
+			 countTotalProduct();
+			 checkCount();  
+		}
+		function userisNotLogin(tzs,tableTotalRows,tableRow){
+			var tableBlankDiv = document.createElement("div");
+		    tableBlankDiv.setAttribute('id','blank');
+		    tableBlankDiv.setAttribute('style','height:50px; width:100%');
+		    var blankH4 = document.createElement("h4");
+		    blankH4.setAttribute('class','text-center');
+		    var strong = document.createElement("strong");
+		    strong.innerHTML="장바구니에 담은 상품이 없습니다.";
+		    blankH4.appendChild(strong);
+		    var p = document.createElement("p");
+		    p.setAttribute('class','text-center');
+		    var span = document.createElement("span");
+		    span.setAttribute('style','font-size: 10pt');
+		    span.innerHTML="로그인을 하시면, 장바구니에 보관된 상품을 확인하실 수 있습니다.";
+		    p.appendChild(span);
+		    var center = document.createElement("center");
+			var a = document.createElement("a");
+		 	a.setAttribute('href','../myPage/login.html');
+		 	a.setAttribute('class','btn btn-default');
+		 	a.setAttribute('id','loginButton');
+		 	a.innerHTML="로그인하기";
+		 	center.appendChild(a);
+		 	document.getElementById('footer').appendChild(tableBlankDiv);
+		 	document.getElementById('footer').appendChild(blankH4);
+		 	document.getElementById('footer').appendChild(p);	
+		 	document.getElementById('footer').appendChild(center);	
+			}
+  
+  //리사이즈가 변화에 따라 한 번만 실행되도록  mode 값 활용
+	var mode = null;
+	
+	
+  function setResizeMode(){
+	  if($(window).width() >= 768){
+		  mode = 0;
+	  } else {
+		  mode = 1;
+	  }
+  }
+  function reloadDisplay(){
+	  setResizeMode();
+	
+	  if ($(window).width() >= 768) { // PC
+          var old_mode = mode;
+          mode = 1;
+          
+          if(old_mode != mode) {
+        	  if(is_logged== 'YES'){ //로그인 on, 장바구니 내 상품 담겨있을때.
+	             	if(tableTotalRows > 0){ 
+	             	   	changeToPC();
+		            	var table = document.getElementById("table");
+		    			while (table.firstChild) {
+		    				table.removeChild( table.firstChild );
+		    			}
+		            	 var thead = document.createElement("thead");
+		            	 thead.setAttribute('id','thead');
+		            	 		            	 
+		            	 var tr = document.createElement("tr");
+		            	 var theadChkbox = document.createElement("th");
+		            	 theadChkbox.setAttribute('id','theadChkbox');
+		            	 var selectAllInput = document.createElement("input");
+		            	 selectAllInput.setAttribute('id','select-all');
+		            	 selectAllInput.setAttribute('class','pull-left');
+		            	 selectAllInput.setAttribute('type','checkbox');
+		            	 selectAllInput.setAttribute('checked','checked');
+		            	 selectAllInput.setAttribute('onClick','CheckAll()');
+		            	 var selectAllSpan = document.createElement("span");
+		            	 selectAllSpan.innerHTML = " 전체선택";
+		            	 theadChkbox.appendChild(selectAllSpan);
+		            	 theadChkbox.appendChild(selectAllInput);
+		            	 
+		            	 var theadInfo = document.createElement("th");
+		            	 theadInfo.setAttribute('id','theadInfo');
+		            	 theadInfo.innerHTML="상품정보";
+		            	 
+		            	 var theadQty = document.createElement("th");
+		            	 theadQty.setAttribute('id','theadQty');
+		            	 theadQty.innerHTML="수량";
+		            	 
+		            	 var theadSubtotal = document.createElement("th");
+		            	 theadSubtotal.setAttribute('id','theadSubtotal');
+		            	 theadSubtotal.setAttribute('class','text-center');
+		            	 theadSubtotal.innerHTML="소계";
+		            	 
+		            	 var theadDiscount = document.createElement("th");
+		            	 theadDiscount.setAttribute('id','theadDiscount');
+		            	 theadDiscount.setAttribute('class','text-center');
+		            	 theadDiscount.innerHTML="온라인 할인가";
+		            	 
+		            	 var theadOnline =  document.createElement("th");
+		            	 theadOnline.setAttribute('id','theadOnline');
+		            	 theadOnline.innerHTML= "오프라인 매장 표시";
+		            	 
+		            	 var theadDeleteBtn = document.createElement("th");
+		            	 theadDeleteBtn.setAttribute('id','theadDeleteBtn');
+		            	 
+		            	 tr.appendChild(theadChkbox);
+		            	 tr.appendChild(theadInfo);
+		            	 tr.appendChild(theadDiscount);
+		            	 tr.appendChild(theadQty);
+		            	 tr.appendChild(theadSubtotal);
+		            	 tr.appendChild(theadOnline);
+		            	 tr.appendChild(theadDeleteBtn);
+		            	 thead.appendChild(tr);
+		            	 
+		            	 document.getElementById('table').appendChild(thead);
+		            	 var tbody = document.createElement('tbody');
+		            	 tbody.setAttribute('id','tbody');
+		            	 document.getElementById('table').appendChild(tbody);		            	
+		            	 
+		         		var footer = document.getElementById("footer");
+		         		footer.remove();
+		         		
+		         		
+		         		var footerDiv = document.createElement("div");
+		         		footerDiv.setAttribute('id','footer');
+		         		document.getElementById('subContainer').appendChild(footerDiv);
+		         		
+		            	 cartisNotEmtpy(tzs,tableTotalRows,tableRow);
+	             	}else{ //로그인 on, 장바구니 내 상품 없을때
+	             		changeToPC();
+	                   	var table = document.getElementById("table");
+		    			while (table.firstChild) {
+		    				table.removeChild( table.firstChild );
+		    			}
+		            	 var thead = document.createElement("thead");
+		            	 thead.setAttribute('id','thead');
+		            	 		            	 
+		            	 var tr = document.createElement("tr");
+		            	 var theadChkbox = document.createElement("th");
+		            	 theadChkbox.setAttribute('id','theadChkbox');
+		            	 var selectAllInput = document.createElement("input");
+		            	 selectAllInput.setAttribute('id','select-all');
+		            	 selectAllInput.setAttribute('class','pull-left');
+		            	 selectAllInput.setAttribute('type','checkbox');
+		            	 selectAllInput.setAttribute('checked','checked');
+		            	 selectAllInput.setAttribute('onClick','CheckAll()');
+		            	 var selectAllSpan = document.createElement("span");
+		            	 selectAllSpan.innerHTML = " 전체선택";
+		            	 theadChkbox.appendChild(selectAllSpan);
+		            	 theadChkbox.appendChild(selectAllInput);
+		            	 
+		            	 var theadInfo = document.createElement("th");
+		            	 theadInfo.setAttribute('id','theadInfo');
+		            	 theadInfo.innerHTML="상품정보";
+		            	 		            	 
+		            	 var theadQty = document.createElement("th");
+		            	 theadQty.setAttribute('id','theadQty');
+		            	 theadQty.innerHTML="수량";
+		            	 
+		            	 var theadSubtotal = document.createElement("th");
+		            	 theadSubtotal.setAttribute('id','theadSubtotal');
+		            	 theadSubtotal.setAttribute('class','text-center');
+		            	 theadSubtotal.innerHTML="소계";
+		            	 
+		            	 var theadDiscount = document.createElement("th");
+		            	 theadDiscount.setAttribute('id','theadDiscount');
+		            	 theadDiscount.setAttribute('class','text-center');
+		            	 theadDiscount.innerHTML="온라인 할인가";
+		            	 
+		            	 var theadOnline =  document.createElement("th");
+		            	 theadOnline.setAttribute('id','theadOnline');
+		            	 theadOnline.innerHTML= "오프라인 매장 표시";
+		            	 
+		            	 var theadDeleteBtn = document.createElement("th");
+		            	 theadDeleteBtn.setAttribute('id','theadDeleteBtn');
+		            	 
+		            	 tr.appendChild(theadChkbox);
+		            	 tr.appendChild(theadInfo);
+		            	 tr.appendChild(theadDiscount);
+		            	 tr.appendChild(theadQty);
+		            	 tr.appendChild(theadSubtotal);
+		            	
+		            	 tr.appendChild(theadOnline);
+		            	 tr.appendChild(theadDeleteBtn);
+		            	 thead.appendChild(tr);
+		            	 
+		            	 document.getElementById('table').appendChild(thead);
+		            	 var tbody = document.createElement('tbody');
+		            	 tbody.setAttribute('id','tbody');
+		            	 document.getElementById('table').appendChild(tbody);	
+	             	}
+        	  } else{ //로그인 off
+        		  var cartCountNumber = document.getElementById("cart-countNumber");        			
+        		  cartCountNumber.setAttribute('style', 'display:none;');
+        	  }
+        	  
+				document.getElementById('showId').setAttribute('style','display:block');
+				document.getElementById('logout').setAttribute('style','display:block');
+				document.getElementById('login').setAttribute('style','display:block');
+          }
+	  }else{ //Mobile
+		  var old_mode = mode;
+	      mode = 0;
+	      if(old_mode != mode) {
+	    	  if(is_logged== 'YES'){ //
+	             	if(tableTotalRows > 0){ 
+	             		changeToMobile();
+	             		var table = document.getElementById("table");
+	             		while (table.firstChild) {
+	             			table.removeChild( table.firstChild );
+	        			}
+	               		for(var i = 0; i< tableTotalRows; i++){
+	              			var cartContentDiv = document.createElement("div");
+	              			cartContentDiv.setAttribute('class','product');
+	              			cartContentDiv.setAttribute('id','productContent');
+	              			cartContentDiv.setAttribute('style','position:relative; width:auto; height:150px; margin-left:3%; margin-right:10%;');
+	              			var discountPrice = tzs[i].product_price*(100-tzs[i].rate)/100;
+	              			
+	              			var button = document.createElement("div");
+	              			button.setAttribute('id','button');
+	              			button.setAttribute('style','position:absolute; float:left; top:50%;');//aaa
+	              			var checkbox = document.createElement("input");
+	                   		checkbox.setAttribute('type','checkbox');
+	                  	 	checkbox.setAttribute('id','checkbox'+i);
+	                   		checkbox.setAttribute('name','CID');
+	    	               	checkbox.setAttribute('checked','checked');
+	    	               	checkbox.setAttribute('style','  position:relative; ');
+	    	               	checkbox.setAttribute('onClick','selectChkbox()');     
+	                  	 	
+	    	               	var button2 = document.createElement("div");
+	    	               	button2.setAttribute('style','position:absolute; float:right; top:0%; left:100%; right:0%;');
+	              		 	var deleteBtn = document.createElement("button");
+	              		 	deleteBtn.setAttribute('id','deleteBtn'+i);
+	              		 	deleteBtn.setAttribute('class','btn btn-default btn-xs ');
+	              		 	deleteBtn.setAttribute('onClick','delete_row('+tableTotalRows+','+tzs[i].product_idx+','+account_idx+')');
+	              		 	var deleteIcon = document.createElement("span");
+	            		 	deleteIcon.setAttribute('class','glyphicon glyphicon-remove');
+	            		 	deleteBtn.appendChild(deleteIcon);
+	            		 	button.appendChild(checkbox);
+	            		 	button2.appendChild(deleteBtn);
+	              			
+	              			var imgDiv = document.createElement("div");
+	              			imgDiv.setAttribute('class','img');
+	              			imgDiv.setAttribute('style','position:absolute; top:20%; left:8%;');
+	              			var img = document.createElement("img");
+	              			img.setAttribute('src','../img/'+tzs[i].img_name);
+	              			img.setAttribute('width','100');
+	              			img.setAttribute('height','100');
+	              			img.setAttribute('style','position:relative;')
+	              			imgDiv.appendChild(img);
+
+	              			var infoDiv = document.createElement("div");
+	              			infoDiv.setAttribute('style','position:absolute; top:15%; left:45%; ');
+	              			var product_name = document.createElement("h4");
+	              			product_name.setAttribute('class','product-name');
+	              			product_name.innerHTML = tzs[i].product_name;
+	              			product_name.setAttribute('style','font-size: 11pt;');
+	              			infoDiv.appendChild(product_name);
+	              	
+	                      	var productQtyTd = document.createElement("div");
+	                      	productQtyTd.setAttribute('class','col-xs-4 col-md-1 pull-right');
+	                      	productQtyTd.setAttribute('style','position:absolute;top:50%; left:80%;');
+	                      	var qtyP = document.createElement("p");
+	                      	qtyP.setAttribute('class','col-xs-6 pull-right');
+	                      	var qtyInput = document.createElement("input");
+	                      	qtyInput.setAttribute('type','text');
+	                      	qtyInput.setAttribute('class','form-control input-sm text-center');
+	                      	qtyInput.setAttribute('style','position:relative; float:left;');
+	                      	qtyInput.setAttribute('id','product_qty'+(i+1)+'');            	
+	                      	//have to change this field
+	                      	qtyInput.setAttribute('value','1');
+	                      	qtyInput.setAttribute('maxlength','3');
+	                      	qtyInput.setAttribute('title','구매수량');
+	                      	var plusButton = document.createElement("button");
+	                      	plusButton.setAttribute('type','button');
+	                      	plusButton.setAttribute('class','btn btn-default btn-xs glyphicon glyphicon-plus');
+	                      	plusButton.setAttribute('id','btn-up');
+	                      	plusButton.setAttribute('style','position:relative; float:left;');
+	                      	plusButton.setAttribute('onClick','qty_plus('+(i+1)+','+tableTotalRows+','+discountPrice+')');
+	                      	var minusButton = document.createElement("button");
+	                      	minusButton.setAttribute('type','button');
+	                      	minusButton.setAttribute('class','btn btn-default btn-xs glyphicon glyphicon-minus');
+	                      	minusButton.setAttribute('id','btn-down');
+	                      	minusButton.setAttribute('style','position:relative;float:left;');
+	                      	minusButton.setAttribute('onClick','qty_minus('+(i+1)+','+tableTotalRows+','+discountPrice+')');
+	                      	
+	                      	qtyP.appendChild(qtyInput);
+	                      	qtyP.appendChild(plusButton);
+	                      	qtyP.appendChild(minusButton);
+	                      	productQtyTd.appendChild(qtyP);
+	                      	
+	                      	var onlineDiscountDiv = document.createElement("div");
+	                      	onlineDiscountDiv.setAttribute('style','position:absolute; top:45%; left:50%;');
+						 	var h5 = document.createElement("h5");
+						 	h5.setAttribute('id','originalPrice'+(i+1));
+					        h5.setAttribute('style','position:relative; text-decoration: line-through; font-size:12pt;');
+					        h5.innerHTML = tzs[i].product_price + ' 원';//상품가격
+					                    
+					        var discountH3 = document.createElement("h5");
+					        discountH3.setAttribute('style','position:relative; left:40%; color:#518ddd;font-size: 12pt;');
+					        discountH3.setAttribute('id','onlineDiscount'+(i+1));
+					        discountH3.innerHTML = tzs[i].product_price*(100-tzs[i].rate)/100 + ' 원'; //상품가격
+					        
+					        onlineDiscountDiv.appendChild(h5);
+					        onlineDiscountDiv.appendChild(discountH3);
+	                      	
+	                      	var hr2 = document.createElement("hr");
+	                      	hr2.setAttribute('class','one');
+	                      		              			
+	                      	var subTotalDiv = document.createElement("div");
+	                    	subTotalDiv.setAttribute('class','pull-right');
+	                    	subTotalDiv.setAttribute('style','position:relative; top:90%; right:0%;');
+	                    	
+	                    	var subTotalBodyDiv=document.createElement("div");
+	                    	var subTotalPrice = document.createElement("h4");
+	                    	subTotalPrice.setAttribute('style','display:inline; font-size:11pt;');
+	                    	subTotalPrice.innerHTML="소계 : "
+	           			 
+	                    	var subTotalPriceh3 = document.createElement("h3");
+	                    	subTotalPriceh3.setAttribute('style','display:inline; font-size:11pt;');
+	                    	subTotalPriceh3.setAttribute('id','subtotal'+(i+1));
+	                    	
+	                    	var subTotalPriceh4 = document.createElement("h4");
+	                    	subTotalPriceh4.setAttribute('style','display:inline; font-size:11pt;');
+	                    	subTotalPriceh4.innerHTML=" 원"
+	                    	
+	                      	subTotalBodyDiv.appendChild(subTotalPrice);
+	                      	subTotalBodyDiv.appendChild(subTotalPriceh3);
+	                    	subTotalBodyDiv.appendChild(subTotalPriceh4);
+	                      	subTotalDiv.appendChild(subTotalBodyDiv);
+	                      	
+	                    	var offLineDiv = document.createElement("div");
+	                    	offLineDiv.setAttribute('style',' position:relative; float:left; left:8%; top:90%;');
+	            		 	var offLineName = document.createElement("a");   
+	            		 	
+	            		 	if(tzs[i].offline_qty > 0){
+	            		 		offLineName.setAttribute('href','javascript:popup('+tzs[i].product_idx+')');
+	            				offLineName.setAttribute('style',' font-size: 10pt;');
+	            				offLineName.setAttribute('class','btn btn-info btn-xs ');
+	            				offLineName.innerHTML='매장 보기';
+	            				var searchIcon = document.createElement("span");
+		            		 	searchIcon.setAttribute('class','glyphicon glyphicons-search');
+		            		 	offLineDiv.appendChild(offLineName);
+		            		 	offLineName.appendChild(searchIcon);	            				
+	            		 	} else{
+	            		 		offLineName.setAttribute('href','#');            	
+	            		 		offLineName.innerHTML='재고 없음';
+	            		 		offLineDiv.appendChild(offLineName);
+	            		 	}
+	            		 	
+	            		 	var hr3 = document.createElement("hr");
+	                      	hr3.setAttribute('class','one');
+
+	                  	 	cartContentDiv.appendChild(button);
+	                  	 	cartContentDiv.appendChild(button2);
+	                  	 	cartContentDiv.appendChild(imgDiv);
+	                      	cartContentDiv.appendChild(infoDiv);
+	                    	cartContentDiv.appendChild(productQtyTd);
+	                    	cartContentDiv.appendChild(onlineDiscountDiv);
+	                    	cartContentDiv.appendChild(hr2);
+	                    	cartContentDiv.appendChild(subTotalDiv);
+	                    	cartContentDiv.appendChild(offLineDiv);
+	                    	
+	                    	var tableBlankDiv = document.createElement("div");
+	            		    tableBlankDiv.setAttribute('id','blank');
+	            		    tableBlankDiv.setAttribute('style','height:20px; width:100%');
+	            		    
+	                      	document.getElementById('table').appendChild(cartContentDiv);
+	                      	document.getElementById('table').appendChild(tableBlankDiv);
+	              		     }
+	              			
+	              			calcSubtotal(tableTotalRows);
+	             	}else{
+	             		//장바구니 내 상품이 없을 때		
+	             		changeToMobile();
+	             	}
+      	  } else{//isNotLogin
+         	 var thead = document.getElementById("thead");
+		     thead.remove();
+      	  }
+				document.getElementById('showId').setAttribute('style','display:none');
+				document.getElementById('logout').setAttribute('style','display:block');
+				document.getElementById('login').setAttribute('style','display:block');
+	      }
+	  }
+  }
+  function popup(product_idx){
+	  		var popUrl = "offLineInfo.html?idx="+product_idx;	//팝업창에 출력될 페이지 URL
+		var popOption = "width=700, height=500, resizable=no, scrollbars=no, status=no;";    //팝업창 옵션(optoin)
+			window.open(popUrl,"",popOption);
+		}
+  </script>
+
+</body>
+</html>
