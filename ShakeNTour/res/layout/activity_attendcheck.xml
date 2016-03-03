@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_attend"
+    android:orientation="vertical"
+    tools:context=".AttendCheckActivity" >
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView3"
+        android:layout_alignBottom="@+id/textView3"
+        android:layout_marginLeft="28dp"
+        android:layout_toRightOf="@+id/textView3"
+        android:text="a"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="40dp"
+        android:layout_height="50dp"
+        android:layout_alignBaseline="@+id/TextView01"
+        android:layout_alignBottom="@+id/TextView01"
+        android:layout_alignLeft="@+id/textView2"
+        android:scaleType="fitXY"
+        android:text="m"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="40sp" />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="133dp"
+        android:layout_toRightOf="@+id/TextView01"
+        android:background="@drawable/attend_icon2_selector" />
+
+    <TextView
+        android:id="@+id/TextView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView3"
+        android:layout_centerVertical="true"
+        android:text="출석 인원 :"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textView1"
+        android:layout_alignLeft="@+id/imageButton1"
+        android:layout_marginBottom="42dp"
+        android:layout_marginLeft="38dp"
+        android:text="전체 인원 :"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="30sp" />
+
+    <ImageButton
+        android:id="@+id/imageButton1"
+        android:layout_width="70dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="37dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/attend_icon1_selector"
+        android:scaleType="fitXY" />
+
+</RelativeLayout>

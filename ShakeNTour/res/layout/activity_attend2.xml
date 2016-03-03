@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_attend"
+    android:orientation="vertical"
+    tools:context=".Attend2Activity" >
+
+    <ImageButton
+        android:id="@+id/imageButton1"
+        android:layout_width="70dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="34dp"
+        android:layout_marginTop="19dp"
+        android:background="@drawable/attend_icon1_selector"
+        android:scaleType="fitXY" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/imageButton1"
+        android:layout_marginTop="43dp"
+        android:src="@drawable/attend_image3" />
+
+</RelativeLayout>

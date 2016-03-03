@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="100dp"
+    android:background="#649dc9"
+    android:orientation="vertical"
+    tools:context=".VoteShakingResultActivity" >
+
+    <Button
+        android:id="@+id/Button02"
+        android:layout_width="97dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/textView2"
+        android:layout_marginRight="19dp"
+        android:scrollHorizontally="false"
+        android:scrollbarAlwaysDrawVerticalTrack="false"
+        android:text="아니오" />
+
+    <Button
+        android:id="@+id/Button01"
+        android:layout_width="97dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="12dp"
+        android:scrollHorizontally="false"
+        android:scrollbarAlwaysDrawVerticalTrack="false"
+        android:text="네" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/Button02"
+        android:layout_centerHorizontal="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="30sp" />
+
+</RelativeLayout>

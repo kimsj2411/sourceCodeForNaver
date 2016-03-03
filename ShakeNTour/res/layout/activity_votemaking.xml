@@ -1,0 +1,148 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scroll"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    tools:context=".VoteMakingActivity" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_vote"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin" >
+
+        <EditText
+            android:id="@+id/editText2"
+            android:layout_width="280dp"
+            android:layout_height="60dp"
+            android:layout_alignRight="@+id/editText1"
+            android:layout_below="@+id/editText1"
+            android:layout_marginTop="26dp"
+            android:background="@drawable/vote_field1"
+            android:ems="10"
+            android:hint="선택지를 입력하세요"
+            android:inputType="textMultiLine" />
+
+        <EditText
+            android:id="@+id/editText4"
+            android:layout_width="280dp"
+            android:layout_height="60dp"
+            android:layout_alignLeft="@+id/editText3"
+            android:layout_below="@+id/editText3"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/vote_field2"
+            android:ems="10"
+            android:hint="선택지를 입력하세요"
+            android:inputType="textMultiLine" />
+
+        <EditText
+            android:id="@+id/editText5"
+            android:layout_width="280dp"
+            android:layout_height="60dp"
+               android:hint="선택지를 입력하세요"
+            android:layout_alignLeft="@+id/editText4"
+            android:layout_below="@+id/editText4"
+            android:layout_marginTop="22dp"
+            android:background="@drawable/vote_field2"
+            android:ems="10"
+            android:inputType="textMultiLine" />
+
+        <ImageButton
+            android:id="@+id/imageButton2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/editText5"
+            android:layout_below="@+id/editText5"
+            android:layout_marginTop="30dp"
+            android:adjustViewBounds="true"
+      
+            android:maxWidth="100dp"
+            android:onClick="send"
+            android:scaleType="fitXY"
+          android:background="@drawable/vote_icon2_selector" />
+
+        <TextView
+            android:id="@+id/TextView01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/editText3"
+            android:layout_alignBottom="@+id/editText3"
+            android:layout_alignLeft="@+id/textView1"
+            android:text="2."
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/TextView02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/editText4"
+            android:layout_alignBottom="@+id/editText4"
+            android:layout_alignLeft="@+id/TextView01"
+            android:text="3."
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/TextView03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/editText5"
+            android:layout_alignBottom="@+id/editText5"
+            android:layout_alignLeft="@+id/TextView02"
+            android:text="4."
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="30dp" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/editText2"
+            android:layout_alignBottom="@+id/editText2"
+            android:layout_alignLeft="@+id/editText1"
+            android:text="1."
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="30sp" />
+
+        <EditText
+            android:id="@+id/editText3"
+            android:layout_width="280dp"
+            android:layout_height="60dp"
+            android:layout_alignLeft="@+id/editText2"
+            android:layout_below="@+id/editText2"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/vote_field2"
+            android:ems="10"
+               android:hint="선택지를 입력하세요"
+            android:inputType="textMultiLine" >
+
+            <requestFocus />
+        </EditText>
+
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="320dp"
+            android:layout_height="80dp"
+            android:layout_below="@+id/imageButton1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/vote_field2"
+            android:ems="10"
+               android:hint="질문지를 입력하세요"
+            android:inputType="textMultiLine" />
+
+        <ImageButton
+            android:id="@+id/imageButton1"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_alignLeft="@+id/editText1"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/vote_icon1_selector" />
+
+    </RelativeLayout>
+
+ </ScrollView>

@@ -1,0 +1,57 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg_notice"
+    android:orientation="vertical"
+    tools:context=".NoticeActivity" >
+
+<EditText
+    android:id="@+id/editText"
+    android:layout_width="320dp"
+    android:layout_height="100dp"
+    android:layout_below="@+id/imageButton1"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="30dp"
+    android:layout_weight="1"
+    android:background="@drawable/notice_field1"
+    android:ems="10"
+    android:hint="공지사항을 입력하세요"
+    android:imeOptions="flagNoExtractUi"
+    android:inputType="textMultiLine|textNoSuggestions"
+    android:scaleType="fitXY" >
+
+    <requestFocus />
+</EditText>
+
+<ImageButton
+    android:id="@+id/send_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignRight="@+id/editText"
+    android:layout_centerVertical="true"
+    android:background="@drawable/notice_icon2_selector"
+    android:text="send" />
+
+<TextView
+    android:id="@+id/textView1"
+    android:layout_width="325dp"
+    android:layout_height="150dp"
+    android:layout_alignRight="@+id/send_button"
+    android:layout_below="@+id/send_button"
+    android:layout_marginTop="34dp"
+    android:background="@drawable/notice_field2"
+    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+<ImageButton
+    android:id="@+id/imageButton1"
+    android:layout_width="80dp"
+    android:layout_height="65dp"
+    android:layout_alignLeft="@+id/editText"
+    android:layout_alignParentTop="true"
+    android:layout_marginTop="29dp"
+    android:background="@drawable/notice_icon1_selector"
+    android:scaleType="fitXY" />
+
+</RelativeLayout>
+
